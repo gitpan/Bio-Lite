@@ -1,0 +1,23 @@
+---
+abstract: 'Bio::Lite is a perl module that aims to answer the same questions as Bio-perl, FASTER and using a SIMPLIFIED API.'
+author:
+  - 'Jérôme Audoux <jerome.audoux@gmail.com>'
+build_requires:
+  File::Temp: '0'
+  Inline::Files: '0.68'
+  Test::More: '0'
+  strict: '0'
+  warnings: '0'
+configure_requires:
+  ExtUtils::MakeMaker: '6.30'
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 5.019, CPAN::Meta::Converter version 2.141520'
+license: gpl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: '1.4'
+name: Bio-Lite
+requires:
+  Carp: '0'
+  Exporter: '0'
+version: '0.001'
