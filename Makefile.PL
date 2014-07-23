@@ -10,7 +10,7 @@ use ExtUtils::MakeMaker 6.30;
 
 
 my %WriteMakefileArgs = (
-  "ABSTRACT" => "Bio::Lite is a perl module that aims to answer the same questions as Bio-perl, FASTER and using a SIMPLIFIED API.",
+  "ABSTRACT" => "Lightweight and fast module with a simplified API to ease scripting in bioinformatics",
   "AUTHOR" => "J\x{e9}r\x{f4}me Audoux <jerome.audoux\@gmail.com>",
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
@@ -30,7 +30,7 @@ my %WriteMakefileArgs = (
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.001",
+  "VERSION" => "0.002",
   "test" => {
     "TESTS" => "t/*.t"
   }

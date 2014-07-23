@@ -2,13 +2,13 @@ package Bio::Lite;
 {
   $Bio::Lite::DIST = 'Bio-Lite';
 }
-# ABSTRACT: Bio::Lite is a perl module that aims to answer the same questions as Bio-perl, FASTER and using a SIMPLIFIED API.
-$Bio::Lite::VERSION = '0.001';
+# ABSTRACT: Lightweight and fast module with a simplified API to ease scripting in bioinformatics
+$Bio::Lite::VERSION = '0.002';
 use Carp;
 
 use Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(seqFileIterator reverseComplemente pairedEndSeqFileIterator gffFileIterator);
+our @EXPORT = qw(seqFileIterator reverseComplemente pairedEndSeqFileIterator gffFileIterator getReadingFileHandle getWritingFileHandle);
 our @EXPORT_OK = qw();
 
 
@@ -17,7 +17,6 @@ sub reverseComplemente {
   $seq =~ tr/ACGTacgt/TGCAtgca/;
   return $seq;
 }
-
 
 
 sub seqFileIterator {
@@ -122,8 +121,12 @@ sub gffFileIterator {
     croak "Undefined gff format";
   }
 
+  my $line = <$fh>;
+  while($line =~ /^#/) {
+    $line = <$fh>;
+  }
+
   return sub {
-    my $line = <$fh>;
     if (defined $line) {
       my($chr,$source,$feature,$start,$end,$score,$strand,$frame,$attributes) = split("\t",$line);
       my @attributes_tab = split(";",$attributes);
@@ -132,6 +135,7 @@ sub gffFileIterator {
         my ($k,$v) = $attribute_split->($attr);
         $attributes_hash{$k} = $v;
       }
+      $line = <$fh>; # Get next line
       return { chr        => $chr,
         source     => $source,
         feature    => $feature, 
@@ -161,6 +165,18 @@ sub getReadingFileHandle {
 }
 
 
+sub getWritingFileHandle {
+  my $file = shift;
+  my $fh;
+  if($file =~ /\.gz$/) {
+    open($fh,"| gzip > $file") or die ("Cannot open $file");
+  } else {
+    open($fh,"> $file") or die ("Cannot open $file");
+  }
+  return $fh;
+}
+
+
 1;
 
 __END__
@@ -171,25 +187,51 @@ __END__
 
 =head1 NAME
 
-Bio::Lite - Bio::Lite is a perl module that aims to answer the same questions as Bio-perl, FASTER and using a SIMPLIFIED API.
+Bio::Lite - Lightweight and fast module with a simplified API to ease scripting in bioinformatics
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
-Keep it simple, keep it fast.
+  # Reverse complementing a sequence
+  my $seq = reverseComplemente("ATGC");
 
-Bio::Lite is a set of subroutines that aim to answer similar question as
-Bio-perl distribution without the complexity. 
+  # Reading a FASTQ file
+  my $it = seqFileIterator('file.fastq','fastq');
+  while(my $entry = $it->()) {
+    print "Sequence name   : $entry->{name}
+           Sequence        : $entry->{seq}
+           Sequence quality: $entry->{qual}","\n";
+  }
 
-Bio::Lite is fast, simple and does not make use of
-complexe data struture and object that lead to slow execution.
+  # Reading paired-end files easier
+  my $it = pairedEndSeqFileIterator($file);
+  while (my $entry = $it->()) {
+    print "Read_1 : $entry->{read1}->{seq}
+           Read_2 : $entry->{read2}->{seq}";
+  }
 
-All methods can be imported with a single "use Bio::Lite"
+  # Parsing a GFF file
+  my $it = gffFileIterator($file);
+  while (my $annot = $it->()) {
+    print "chr    : $annot->{chr}
+           start  : $annot->{start}
+           end    : $annot->{end}";
+  }
 
-Bio::Lite is also a lightweigth, single, module with no dependencies.
+=head1 DESCRIPTION
+
+Bio::Lite is a set of subroutines that aims to answer similar questions as
+Bio-perl distribution in a FAST and SIMPLE way.
+
+Bio::Lite does not make use of complexe data struture, or
+objects, that would lead to a slow execution.
+
+All methods can be imported with a single "use Bio::Lite".
+
+Bio::Lite is a lightweight-single-module with NO DEPENDENCIES.
 
 =head1 UTILS
 
@@ -197,19 +239,33 @@ Bio::Lite is also a lightweigth, single, module with no dependencies.
 
 Reverse complemente the (nucleotid) sequence in arguement.
 
+Example:
+
+  my $seq_revcomp = reverseComplemente($seq);
+
+reverseComplemente is more than B<100x faster than Bio-Perl> revcom_as_string()
+
 =head1 PARSING
 
 This are some tools that aim to read (bio) files like
-- Sequence files : FASTA, FASTQ
-- Annotation files : GFF3, GTF2, BED6, BED12, ...
-- Alignement files : SAM, BAM
-- 
+
+=over
+
+=item Sequence files : FASTA, FASTQ
+
+=item Annotation files : GFF3, GTF2, BED6, BED12, ...
+
+=item Alignement files : SAM, BAM
+
+=back
 
 =head2 seqFileIterator
 
 Open Fasta, or Fastq files (can be gziped).
 seqFileIterator has an automatic file extension detection but you can force it
-using a second parameter with the format : 'fasta' or 'fastq'
+using a second parameter with the format : 'fasta' or 'fastq'.
+
+Example:
 
   my $it = seqFileIterator('file.fastq','fastq');
   while(my $entry = $it->()) {
@@ -218,9 +274,24 @@ using a second parameter with the format : 'fasta' or 'fastq'
            Sequence quality: $entry->{qual}","\n";
   }
 
+Return: HashRef
+
+  { name => 'sequence_identifier',
+    seq  => 'sequence_value',
+    qual => 'sequence_quality', # only defined for FASTQ files
+  }
+
+seqFileIterator is more than B<50x faster than Bio-Perl> Bio::SeqIO for FASTQ files
+seqFileIterator is 4x faster than Bio-Perl Bio::SeqIO for FASTA files
+
 =head2 pairedEndSeqFileIterator
 
-Open Paired-End Sequence file unsing seqFileIterator()
+Open Paired-End Sequence files using seqFileIterator()
+
+Paird-End files are generated by Next Generation Sequencing technologies (like Illumina) where two
+reads are sequenced from the same DNA fragment and saved in separated files.
+
+Example:
 
   my $it = pairedEndSeqFileIterator($file);
   while (my $entry = $it->()) {
@@ -228,11 +299,28 @@ Open Paired-End Sequence file unsing seqFileIterator()
            Read_2 : $entry->{read2}->{seq}";
   }
 
+Return: HashRef
+
+  { read1 => 'see seqFileIterator() return',
+    read2 => 'see seqFileIterator() return'
+  }
+
+pairedEndSeqFileIterator has no equivalent in Bio-Perl
+
 =head2 gffFileIterator 
 
 manage GFF3 and GTF2 file format
 
-Return a hashref with the annotation parsed :
+Example:
+
+  my $it = gffFileIterator($file);
+  while (my $annot = $it->()) {
+    print "chr    : $annot->{chr}
+           start  : $annot->{start}
+           end    : $annot->{end}";
+  }
+
+Return a hashref with the annotation parsed:
 
   { chr => ...,
     source => ...,
@@ -244,6 +332,8 @@ Return a hashref with the annotation parsed :
     attributes => { id => val, ...}
   }
 
+gffFileIterator is B<5x faster than Bio-Perl> Bio::Tools::GFF
+
 =head1 FILES IO
 
 =head2 getReadingFileHandle
@@ -251,9 +341,26 @@ Return a hashref with the annotation parsed :
 Return a file handle for the file in argument.
 Display errors if file cannot be oppenned and manage gzipped files (based on .gz file extension)
 
-=head1 TODO
+Example:
 
-- add a seqFileIterator that manage paired-end files
+  my $fh = getReadingFileHandle('file.txt.gz');
+  while(<$fh>) {
+    print $_;
+  }
+  close $fh;
+
+=head2 getWritingFileHandle
+
+Return a file handle for the file in argument.
+Display errors if file cannot be oppenned and manage gzipped files (based on .gz file extension)
+
+Example:
+
+  my $fh = getWritingFileHandle('file.txt.gz');
+  print $fh "Hello world\n";
+  close $fh;
+
+=head1 TODO
 
 =head1 AUTHOR
 

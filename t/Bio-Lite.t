@@ -165,6 +165,9 @@ TGCTTGTAGAATATGACTTACCAGCACTCCTGGACCAAGAGCTCTTTGAGTTACTTTTTAATTGGTCCATGTCTCT
 +
 dhhhhhhhfhhahchhhhcfgghhhhhfhhfa_afhhhhaghhghhaffhhffhhf]fdfhhhhgafhdfhhhhhg
 __GFF3__
+##gff-version 3
+# The organism is Homo Sapiens
+# The API version used is 73
 HSCHR6_MHC_MANN	Ensembl_CORE	gene	30051790	30051922	.	-	.	ID=ENSG00000266142;Name=CT009552.1;transcripts_nb=1;exons_nb=1
 HSCHR6_MHC_MANN	Ensembl_CORE	mRNA	30051790	30051922	.	-	.	ID=ENST00000578939;Parent=ENSG00000266142;exons_nb=1;type=small_ncRNA:miRNA
 HSCHR6_MHC_MANN	Ensembl_CORE	exon	30051790	30051922	.	-	.	ID=ENSE00002706393;Parent=ENST00000578939;exon_rank=1

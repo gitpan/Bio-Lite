@@ -39,8 +39,8 @@ print "READING A FASTQ FILE\n";
      while(my $entry = $fastq_it->()) { $nb_seq++; }
     };
 
-    $t_bioperl = timeit($nb_fastq_entries,$code);
-    print "Bio::Lite\t$nb_fastq_entries loops of other code took:",timestr($t_bioperl),"\n";
+    $t_biolite = timeit($nb_fastq_entries,$code);
+    print "Bio::Lite\t$nb_fastq_entries loops of other code took:",timestr($t_biolite),"\n";
   }
 
 
@@ -53,11 +53,12 @@ print "READING A FASTQ FILE\n";
     my $code = sub {
       while (my $seq = $inseq->next_seq) {$nb_seq++;};
     };
-    $t_biolite = timeit($nb_fastq_entries,$code);
-    print "Bio::Perl\t$nb_fastq_entries loops of other code took:",timestr($t_biolite),"\n";
+    $t_bioperl = timeit($nb_fastq_entries,$code);
+    print "Bio::Perl\t$nb_fastq_entries loops of other code took:",timestr($t_bioperl),"\n";
   }
 
-  print "Bio::Lite acceleration: ".(($t_biolite->cpu_a -$t_bioperl->cpu_a)/$t_bioperl->cpu_a*100)."%\n";
+  #print "Bio::Lite acceleration: ".(($t_biolite->cpu_a -$t_bioperl->cpu_a)/$t_bioperl->cpu_a*100)."%\n";
+  print "Bio::Lite acceleration: ".($t_bioperl->cpu_a/$t_biolite->cpu_a)."x faster\n";
 }
 
 print "\nREADING A FASTA FILE\n";
@@ -85,8 +86,8 @@ print "\nREADING A FASTA FILE\n";
      while(my $entry = $fasta_it->()) { $nb_seq++; }
     };
 
-    $t_bioperl = timeit($nb_fasta_entries,$code);
-    print "Bio::Lite\t$nb_fasta_entries loops of other code took:",timestr($t_bioperl),"\n";
+    $t_biolite = timeit($nb_fasta_entries,$code);
+    print "Bio::Lite\t$nb_fasta_entries loops of other code took:",timestr($t_biolite),"\n";
   }
 
 
@@ -99,10 +100,11 @@ print "\nREADING A FASTA FILE\n";
     my $code = sub {
       while (my $seq = $inseq->next_seq) {$nb_seq++;};
     };
-    $t_biolite = timeit($nb_fasta_entries,$code);
-    print "Bio::Perl\t$nb_fasta_entries loops of other code took:",timestr($t_biolite),"\n";
+    $t_bioperl = timeit($nb_fasta_entries,$code);
+    print "Bio::Perl\t$nb_fasta_entries loops of other code took:",timestr($t_bioperl),"\n";
   }
-  print "Bio::Lite acceleration: ".(($t_biolite->cpu_a -$t_bioperl->cpu_a)/$t_bioperl->cpu_a*100)."%\n";
+  #print "Bio::Lite acceleration: ".(($t_biolite->cpu_a -$t_bioperl->cpu_a)/$t_bioperl->cpu_a*100)."%\n";
+  print "Bio::Lite acceleration: ".($t_bioperl->cpu_a/$t_biolite->cpu_a)."x faster\n";
 }
 
 print "\nREADING A GFF3 FILE\n";
@@ -130,8 +132,8 @@ print "\nREADING A GFF3 FILE\n";
      while(my $entry = $gff_it->()) { $nb_annot++; }
     };
 
-    $t_bioperl = timeit($nb_gff_entries,$code);
-    print "Bio::Lite\t$nb_gff_entries loops of other code took:",timestr($t_bioperl),"\n";
+    $t_biolite = timeit($nb_gff_entries,$code);
+    print "Bio::Lite\t$nb_gff_entries loops of other code took:",timestr($t_biolite),"\n";
   }
 
 
@@ -145,10 +147,11 @@ print "\nREADING A GFF3 FILE\n";
       }
       $gffio->close();
     };
-    $t_biolite = timeit($nb_gff_entries,$code);
-    print "Bio::Perl\t$nb_gff_entries loops of other code took:",timestr($t_biolite),"\n";
+    $t_bioperl = timeit($nb_gff_entries,$code);
+    print "Bio::Perl\t$nb_gff_entries loops of other code took:",timestr($t_bioperl),"\n";
   }
-  print "Bio::Lite acceleration: ".(($t_biolite->cpu_a -$t_bioperl->cpu_a)/$t_bioperl->cpu_a*100)."%\n";
+  #print "Bio::Lite acceleration: ".(($t_biolite->cpu_a -$t_bioperl->cpu_a)/$t_bioperl->cpu_a*100)."%\n";
+  print "Bio::Lite acceleration: ".($t_bioperl->cpu_a/$t_biolite->cpu_a)."x faster\n";
 }
 
 print "\nREVERSE COMPLEMENTING\n";
@@ -159,16 +162,17 @@ print "\nREVERSE COMPLEMENTING\n";
 
   {
     my $code = sub { my $reverse_complement = reverseComplemente( $seq ); };
-    $t_bioperl = timeit($nb_revcomp,$code);
-    print "Bio::Lite\t$nb_revcomp loops of other code took:",timestr($t_bioperl),"\n";
+    $t_biolite = timeit($nb_revcomp,$code);
+    print "Bio::Lite\t$nb_revcomp loops of other code took:",timestr($t_biolite),"\n";
   }
 
   {
-    my $code = sub { my $reverse_complement = revcom( $seq ); };
-    $t_biolite = timeit($nb_revcomp,$code);
-    print "Bio::Perl\t$nb_revcomp loops of other code took:",timestr($t_biolite),"\n";
+    my $code = sub { my $reverse_complement = revcom_as_string( $seq ); };
+    $t_bioperl = timeit($nb_revcomp,$code);
+    print "Bio::Perl\t$nb_revcomp loops of other code took:",timestr($t_bioperl),"\n";
   }
-  print "Bio::Lite acceleration: ".(($t_biolite->cpu_a -$t_bioperl->cpu_a)/$t_bioperl->cpu_a*100)."%\n";
+  #print "Bio::Lite acceleration: ".(($t_biolite->cpu_a -$t_bioperl->cpu_a)/$t_bioperl->cpu_a*100)."%\n";
+  print "Bio::Lite acceleration: ".($t_bioperl->cpu_a/$t_biolite->cpu_a)."x faster\n";
 }
 
 __FASTQ__

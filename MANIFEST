@@ -4,6 +4,7 @@ MANIFEST
 META.yml
 Makefile.PL
 README
+README.md
 dist.ini
 extra/perf-test.pl
 lib/Bio/Lite.pm

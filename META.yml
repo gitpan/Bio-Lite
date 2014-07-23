@@ -1,5 +1,5 @@
 ---
-abstract: 'Bio::Lite is a perl module that aims to answer the same questions as Bio-perl, FASTER and using a SIMPLIFIED API.'
+abstract: 'Lightweight and fast module with a simplified API to ease scripting in bioinformatics'
 author:
   - 'Jérôme Audoux <jerome.audoux@gmail.com>'
 build_requires:
@@ -20,4 +20,4 @@ name: Bio-Lite
 requires:
   Carp: '0'
   Exporter: '0'
-version: '0.001'
+version: '0.002'
