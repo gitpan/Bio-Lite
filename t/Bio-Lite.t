@@ -1,13 +1,18 @@
 use strict;
 use warnings;
 
-use Test::More tests => 47;
+use Test::More tests => 51;
 
 use Bio::Lite;
 use Inline::Files 0.68;
 use File::Temp;
 
 is(reverseComplemente("AGCTGCGTnGTA"),"TACnACGCAGCT");
+
+is(convertStrand(1),'+');
+is(convertStrand(-1),'-');
+is(convertStrand('+'),1);
+is(convertStrand('-'),-1);
 
 
 # __FASTQ__ => seqFileIterator($file,'fastq')

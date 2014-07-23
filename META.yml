@@ -1,7 +1,7 @@
 ---
 abstract: 'Lightweight and fast module with a simplified API to ease scripting in bioinformatics'
 author:
-  - 'Jérôme Audoux <jerome.audoux@gmail.com>'
+  - 'Jérôme Audoux <jaudoux@cpan.org>'
 build_requires:
   File::Temp: '0'
   Inline::Files: '0.68'
@@ -20,4 +20,4 @@ name: Bio-Lite
 requires:
   Carp: '0'
   Exporter: '0'
-version: '0.002'
+version: '0.003'

@@ -3,12 +3,12 @@ package Bio::Lite;
   $Bio::Lite::DIST = 'Bio-Lite';
 }
 # ABSTRACT: Lightweight and fast module with a simplified API to ease scripting in bioinformatics
-$Bio::Lite::VERSION = '0.002';
+$Bio::Lite::VERSION = '0.003';
 use Carp;
 
 use Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(seqFileIterator reverseComplemente pairedEndSeqFileIterator gffFileIterator getReadingFileHandle getWritingFileHandle);
+our @EXPORT = qw(seqFileIterator reverseComplemente convertStrand pairedEndSeqFileIterator gffFileIterator getReadingFileHandle getWritingFileHandle);
 our @EXPORT_OK = qw();
 
 
@@ -16,6 +16,13 @@ sub reverseComplemente {
   my $seq = reverse shift;
   $seq =~ tr/ACGTacgt/TGCAtgca/;
   return $seq;
+}
+
+
+my %conversion_hash = ( '+' => 1, '-' => '-1', '1' => '+', '-1' => '-');
+sub convertStrand($) {
+  my $strand = shift;
+  return $conversion_hash{$strand};
 }
 
 
@@ -191,7 +198,7 @@ Bio::Lite - Lightweight and fast module with a simplified API to ease scripting 
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 SYNOPSIS
 
@@ -244,6 +251,24 @@ Example:
   my $seq_revcomp = reverseComplemente($seq);
 
 reverseComplemente is more than B<100x faster than Bio-Perl> revcom_as_string()
+
+=head2 convertStrand
+
+Convert strand from '+/-' standard to '1/-1' standard and the opposite.
+
+Example:
+
+  say "Forward a: ",convertStrand('+');
+  say "Forward b: ",convertStrand(1);
+  say "Reverse a: ",convertStrand('-');
+  say "Reverss b: ",convertStrand(-1);
+
+will print
+
+  Forward a: 1
+  Forward b: +
+  Reverse a: -1
+  Reverse b: -
 
 =head1 PARSING
 
@@ -322,14 +347,15 @@ Example:
 
 Return a hashref with the annotation parsed:
 
-  { chr => ...,
-    source => ...,
-    feature => ...,
-    start => ...,
-    end => ...,
-    strand ...,
-    frame ...,
-    attributes => { id => val, ...}
+  { chr         => 'field_1',
+    source      => 'field_2',
+    feature     => 'field_3',
+    start       => 'field_4',
+    end         => 'field_5',
+    score       => 'field_6',
+    strand      => 'field_7',
+    frame       => 'field_8'
+    attributes  => { 'attribute_id' => 'attribute_value', ...}
   }
 
 gffFileIterator is B<5x faster than Bio-Perl> Bio::Tools::GFF
@@ -364,7 +390,7 @@ Example:
 
 =head1 AUTHOR
 
-Jérôme Audoux <jerome.audoux@gmail.com>
+Jérôme Audoux <jaudoux@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 

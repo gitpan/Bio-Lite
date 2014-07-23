@@ -11,7 +11,7 @@ use ExtUtils::MakeMaker 6.30;
 
 my %WriteMakefileArgs = (
   "ABSTRACT" => "Lightweight and fast module with a simplified API to ease scripting in bioinformatics",
-  "AUTHOR" => "J\x{e9}r\x{f4}me Audoux <jerome.audoux\@gmail.com>",
+  "AUTHOR" => "J\x{e9}r\x{f4}me Audoux <jaudoux\@cpan.org>",
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
   },
@@ -30,7 +30,7 @@ my %WriteMakefileArgs = (
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.002",
+  "VERSION" => "0.003",
   "test" => {
     "TESTS" => "t/*.t"
   }
